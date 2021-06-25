@@ -1,59 +1,52 @@
 import pygame
+clock = pygame.time.Clock()
+WIDTH = 1024  # 16 * 64 or 32 * 32 or 64 * 16
+HEIGHT = 768  # 16 * 48 or 32 * 24 or 64 * 12
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-class Ship(pygame.sprite.Sprite):
+class Block():
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
 
-    def __init__(self, speed, color):
-        super().__init__()
-        self.image = pygame.Surface((10, 10))
-        self.image.set_colorkey((12,34,56))
-        self.image.fill((12,34,56))
-        pygame.draw.circle(self.image, color, (5, 5), 3)
-        self.rect = self.image.get_rect()
+        self.rect = pygame.rect.Rect((self.x, self.y, width, height))
 
-        self.pos = pygame.Vector2(0, 0)
-        self.set_target((0, 0))
-        self.speed = speed
+    def draw(self, surface):
 
-    def set_target(self, pos):
-        self.target = pygame.Vector2(pos)
+        pygame.draw.rect(screen, (0,150,55), self.rect)
 
-    def update(self):
-        move = self.target - self.pos
-        move_length = move.length()
+        self.x = self.rect.left
+        self.y = self.rect.top
 
-        if move_length < self.speed:
-            self.pos = self.target
-        elif move_length != 0:
-            move.normalize_ip()
-            move = move * self.speed
-            self.pos += move
+    def move(self, vect):
+        x = vect[0] - self.rect.left
+        y = vect[1] - self.rect.top
 
-        self.rect.topleft = list(int(v) for v in self.pos)
+        self.rect.move_ip(x, y)
 
-def main():
-    pygame.init()
-    quit = False
-    screen = pygame.display.set_mode((300, 300))
-    clock = pygame.time.Clock()
+block = Block(100, 100, 150, 50)
 
-    group = pygame.sprite.Group(
-        Ship(1.5, pygame.Color('white')),
-        Ship(3.0, pygame.Color('orange')),
-        Ship(4.5, pygame.Color('dodgerblue')))
+def gameloop():
 
-    while not quit:
+    loopExit = True
+
+    while loopExit == True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                for ship in group.sprites():
-                    ship.set_target(pygame.mouse.get_pos())
+                loopExit = False
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_d:
+                    block.move([5,0])
 
-        group.update()
-        screen.fill((20, 20, 20))
-        group.draw(screen)
-        pygame.display.flip()
+            if event.type == pygame.MOUSEBUTTONUP:
+                block.move(pygame.mouse.get_pos())
+
+        screen.fill((25,25,25))
+
+        block.draw(screen)
+
         clock.tick(60)
 
-if __name__ == '__main__':
-    main()
+        pygame.display.flip()
+
+gameloop()

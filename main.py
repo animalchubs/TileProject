@@ -75,8 +75,8 @@ class Game:
                     self.quit()
             if event.type == pg.MOUSEBUTTONDOWN:
                 print(pg.mouse.get_pos())
-                x, y = pg.mouse.get_pos()
-                self.player.move(dx=x, dy=y)
+
+                self.player.move(pg.mouse.get_pos())
 
 
     def show_start_screen(self):
