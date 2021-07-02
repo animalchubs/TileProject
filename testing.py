@@ -1,52 +1,52 @@
-import pygame
-clock = pygame.time.Clock()
-WIDTH = 1024  # 16 * 64 or 32 * 32 or 64 * 16
-HEIGHT = 768  # 16 * 48 or 32 * 24 or 64 * 12
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+import pygame as pg
+from pygame.math import Vector2
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+DARKGREY = (40, 40, 40)
+LIGHTGREY = (100, 100, 100)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
+CYAN = (0, 255, 255)
 
-class Block():
-    def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
+class Entity(pg.sprite.Sprite):
 
-        self.rect = pygame.rect.Rect((self.x, self.y, width, height))
+    def __init__(self, pos, *groups):
+        super().__init__(*groups)
+        self.image = pg.Surface((30, 30))
+        self.image.fill(CYAN)
+        self.rect = self.image.get_rect(center=pos)
+        self.pos = Vector2(pos)
 
-    def draw(self, surface):
+    def update(self):
+        # Get a vector that points from the position to the target.
+        heading = pg.mouse.get_pos() - self.pos
+        self.pos += heading * 0.1  # Scale the vector to the desired length.
+        self.rect.center = self.pos
 
-        pygame.draw.rect(screen, (0,150,55), self.rect)
 
-        self.x = self.rect.left
-        self.y = self.rect.top
+def main():
+    screen = pg.display.set_mode((640, 480))
+    clock = pg.time.Clock()
+    all_sprites = pg.sprite.Group()
+    entity = Entity((100, 300), all_sprites)
 
-    def move(self, vect):
-        x = vect[0] - self.rect.left
-        y = vect[1] - self.rect.top
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                return
+            if event.type == pg.MOUSEBUTTONDOWN:
+                all_sprites.update()
 
-        self.rect.move_ip(x, y)
 
-block = Block(100, 100, 150, 50)
+        screen.fill((30, 30, 30))
+        all_sprites.draw(screen)
 
-def gameloop():
-
-    loopExit = True
-
-    while loopExit == True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                loopExit = False
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_d:
-                    block.move([5,0])
-
-            if event.type == pygame.MOUSEBUTTONUP:
-                block.move(pygame.mouse.get_pos())
-
-        screen.fill((25,25,25))
-
-        block.draw(screen)
-
+        pg.display.flip()
         clock.tick(60)
 
-        pygame.display.flip()
 
-gameloop()
+if __name__ == '__main__':
+    pg.init()
+    main()
+    pg.quit()

@@ -77,9 +77,9 @@ class Game:
                 x = pg.mouse.get_pos()[0] // TILESIZE
                 y = pg.mouse.get_pos()[1] // TILESIZE
                 print(x, y)
-              #  new_x, new_y = do_calculations()
-                self.player.move(dx=new_x, dy=new_y)
-                # self.player.move(dx=x, dy=y)
+
+              #  self.player.move_toward(dx=x, dy=y)
+                self.player.move(dx=x, dy=y)
 
 
     def show_start_screen(self):
